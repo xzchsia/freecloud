@@ -21,13 +21,12 @@ if (!FREECLOUD_API_KEY) {
 
 // Worker URL配置 - 混淆存储
 const _primaryParts = [
-  'aHR0cHM6Ly93ZWJr', 'ZWVwYWxpdmUtc2Vy', 'dmVyLnFsZHlmLndv', 'cmtlcnMuZGV2Lw==',
-  'aHR0cHM6Ly9mcmVl', 'Y2xvdWRuYXR0dWwu', 'd2hvZXIucHAudWEv'
+  'aHR0cHM6Ly93ZWJr', 'ZWVwYWxpdmUtc2Vy', 'dmVyLnFsZHlmLndv', 'cmtlcnMuZGV2Lw=='
 ];
 
 // 重建URL
-const WORKER_URL = Buffer.from(_primaryParts.slice(0, 4).join(''), 'base64').toString();
-const SECONDARY_URL = Buffer.from(_primaryParts.slice(4, 7).join(''), 'base64').toString();
+const WORKER_URL = Buffer.from(_primaryParts.join(''), 'base64').toString();
+// 移除客户端指定的SECONDARY_URL，让URL1完全决定URL2选择
 
 // 解析账号数据
 let accounts = [];
@@ -48,7 +47,7 @@ accounts.forEach((account, index) => {
   console.log(`账号 ${index + 1}: ${account.username} (${portLabel}: ${account.port}) [${account.type || 'freecloud'}]`);
 });
 
-const timeout = '6W2iOZvG1qbo';
+const timeout = 'c4qMUFoxclv8';
 
 /**
  * 转义 Markdown 特殊字符
@@ -158,7 +157,7 @@ async function callWorkerForAllAccounts(accountGroups, apiKey) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
         'X-Multi-Site-Mode': 'true',  // 标识多站点模式
-        'X-Secondary-Worker-URL': SECONDARY_URL,  // 传递主URL2
+        // 移除 X-Secondary-Worker-URL，让URL1使用默认的URL2轮转列表
         'X-Request-Timeout': timeout  // 版本验证码
       },
       body: JSON.stringify({
